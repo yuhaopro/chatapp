@@ -1,8 +1,14 @@
+import 'package:chatapp/services/auth_service.dart';
+import 'package:chatapp/services/database_service.dart';
+import 'package:chatapp/utils/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:chatapp/theme/theme.dart';
-import 'package:chatapp/widgets/text_form_field_themed.dart';
-import 'screens_functions.dart';
+import '../services/sp_helper.dart';
+import '../theme/theme.dart';
+import 'routes.dart';
+import 'package:email_validator/email_validator.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,13 +21,20 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  FocusNode emailFocusNode = FocusNode();
-  FocusNode _passwordFocusNode = FocusNode();
+
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+
+  bool _emailError = false;
+  bool _passwordError = false;
+
+  bool _isLoading = false;
+  AuthService authService = AuthService();
 
   @override
   void initState() {
     super.initState();
-    emailFocusNode.addListener(() {
+    _emailFocusNode.addListener(() {
       setState(() {});
     });
     _passwordFocusNode.addListener(() {
@@ -31,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    emailFocusNode.dispose();
+    _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     super.dispose();
   }
@@ -41,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView(
+          child: _isLoading ? const CircularProgressIndicator() : SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: MediaQuery.of(context).size.width * 0.1,
@@ -53,52 +66,87 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      "SocraticMind",
-                      style: TextStyle(
+                     Text(
+                      Constants.title,
+                      style: const TextStyle(
                         fontFamily: 'Nunito',
-                        fontSize: 40,
+                        fontSize: 50,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.width * 0.1,
                     ),
-                    Icon(
+                    const Icon(
                       Icons.chat_outlined,
                       size: 100,
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.width * 0.1,
                     ),
-                    TextFormFieldThemed(
-                      focusNode: emailFocusNode,
-                      labelText: "Email",
-                      icon: Icon(Icons.email),
-                      onChanged: null,
-                      validator: (val) {
-                        return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-                        // It's used to assert that the value of val is not null, and to force the code to continue execution even if it is null
-                            .hasMatch(val!)
-                            ? null
-                            : "Please enter a valid email";
-                      },
-                      textEditingController: _emailController,
-                      error: null,
-                    ),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.025),
-                    TextFormFieldThemed(
-                      obscureText: true,
-                      focusNode: _passwordFocusNode,
-                      labelText: "Password",
-                      icon: Icon(Icons.lock),
+                    TextFormField(
+                      obscureText: false,
+                      controller: _emailController,
+                      focusNode: _emailFocusNode,
+                      cursorColor: Colors.black,
+                      decoration: InputDecoration(
+                        labelText: "Email",
+                        labelStyle: TextStyle(
+                          color: AppTheme.textFormFieldColor(focusNode: _emailFocusNode, error: _emailError),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppTheme.textFormFieldColor(focusNode: _emailFocusNode, error: _emailError),
+                          ),
+                        ),
+                        prefixIcon: const Icon(Icons.email),
+                        errorText: _emailError ? "The email you entered is invalid or does not exist" : null,
+                        prefixIconColor: AppTheme.textFormFieldColor(focusNode: _emailFocusNode, error: _emailError),
+                      ),
                       onChanged: null,
                       validator: (val) {
-                        return val!.length >= 8 ? null : "Password must be at least 8 characters";
+                        bool emailValid = EmailValidator.validate(val!);
+                        if (!emailValid) {
+                          setState(() {
+                            _emailError = true;
+                          });
+                        }
+                        else {
+                          _emailError = false;
+                        }
+                        return null;
                       },
-                      textEditingController: _passwordController,
-                      error: null,
+                    ),
+                    SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.025),
+                    TextFormField(
+                      obscureText: true,
+                      controller: _passwordController,
+                      focusNode: _passwordFocusNode,
+                      cursorColor: Colors.black,
+                      decoration: InputDecoration(
+                        labelText: "Password",
+                        labelStyle: TextStyle(
+                          color: AppTheme.textFormFieldColor(focusNode: _passwordFocusNode, error: _passwordError),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppTheme.textFormFieldColor(focusNode: _passwordFocusNode, error: _passwordError),
+                          ),
+                        ),
+                        prefixIcon: const Icon(Icons.lock),
+                        errorText: _passwordError ? "Wrong password" : null,
+                        prefixIconColor: AppTheme.textFormFieldColor(focusNode: _passwordFocusNode, error: _passwordError),
+                      ),
+                      onChanged: null,
+                      validator: (val) {
+                        if (val!.isEmpty || val.length < 8) {
+                          setState(() {
+                            _passwordError = true;
+                          });
+                        }
+                        return null;
+                      },
                     ),
                     SizedBox(
                         height: MediaQuery.of(context).size.height * 0.025),
@@ -111,11 +159,11 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           onPressed: () {
                                 //TODO: Log in with the user and password information
-                                ScreenFunctions.login(_formKey, _emailController.text, _passwordController.text);
+                                login();
                               },
-                          child: Text(
+                          child: const Text(
                             "Login",
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                             ),
@@ -139,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 Navigator.pushReplacementNamed(
-                                    context, '/register');
+                                    context, Routes.register);
                               }),
                       ],
                     )),
@@ -152,4 +200,42 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+  void login() async {
+    if (_formKey.currentState!.validate())
+      {
+        setState(() {
+          _isLoading = true;
+          _emailError = false;
+          _passwordError = false;
+        });
+
+        await authService.loginEmailandPassword(_emailController.text, _passwordController.text).then((value) async{
+          // authenticated successfully
+          if (value == true) {
+            // Document object
+            QuerySnapshot snapshot = await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).gettingUserDataThroughEmail(_emailController.text);
+            // saving the shared preference state
+            SPHelper.saveUserLoggedInStatus(value);
+            SPHelper.saveEmail(_emailController.text);
+            SPHelper.saveUsername(snapshot.docs[0]["username"]);
+            if (context.mounted) {
+              Navigator.pushReplacementNamed(context, Routes.home);
+            }
+          } else {
+            setState(() {
+              _isLoading = false;
+              debugPrint("FirebaseAuthException: $value");
+              if (value == "wrong-password") {
+                _passwordError = true;
+              }
+              if (value == "invalid-email" || value == "user-not-found") {
+                _emailError = true;
+              }
+            });
+          }
+        });
+
+      }
+  }
 }
+

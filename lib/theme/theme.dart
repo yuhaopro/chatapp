@@ -3,33 +3,24 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static ThemeData customThemeData() {
     return ThemeData(
-      inputDecorationTheme: InputDecorationTheme(
+      inputDecorationTheme: const InputDecorationTheme(
         focusColor: Colors.black,
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.black),
         ),
       ),
-      iconTheme: IconThemeData(color: Colors.black),
+      iconTheme: const IconThemeData(color: Colors.black),
     );
   }
-  static Color iconBlackFocused() {
-    return MaterialStateColor.resolveWith((Set<MaterialState> states) {
-      if (states.contains(MaterialState.focused)) {
-        return Colors.black;
-      }
-      if (states.contains(MaterialState.error)) {
-        return Colors.red;
-      }
-      return Colors.grey;
-    });
-  }
-
-  static Color textfocusedState(FocusNode _focusstate) {
-    if (_focusstate.hasFocus)
-      {
-        return Colors.black;
-      }
+  static Color textFormFieldColor({required FocusNode focusNode, bool error = false}) {
+    if (error) {
+      return Colors.red;
+    }
+    if (focusNode.hasFocus) {
+      return Colors.black;
+    }
     return Colors.grey;
   }
+
 
 }
