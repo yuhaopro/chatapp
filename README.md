@@ -17,4 +17,4 @@ A chat app architecture typically consists of several components, including:
 
 5. <mark style="background: #147df5;">User authentication and authorization system:</mark> This is used to verify the identity of users and ensure they have permission to access certain chat rooms or conversations. I will be using Firebase Authentication (Email and Password).
 
-6. <mark style="background: #D2B3FFA6;">UI/UX design:</mark> This includes the visual and interactive components of the app, such as the chat interface and settings menus. I am considering implementing Material Design from Mat
+6. <mark style="background: #D2B3FFA6;">UI/UX design:</mark> This includes the visual and interactive components of the app, such as the chat interface and settings menus. I am considering implementing Material Design from Material 3.
