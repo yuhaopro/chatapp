@@ -1,17 +1,9 @@
-# chatapp
+# chatapp (In Progress)
 
-A chatapp built with Flutter and Firebase. 
+A chatapp built with Flutter and Firebase 
 
 ## Problem Identification
-Have a hard time understanding what someone means through their text? SocraticChat uses the Socratic Method to examine sentiments in a more meaningful way by providing questions to think about for each message receive. Of course, it should also aim to expand your conversation potential by allowing you to think about different things to ask about. In other words, Generate questions, and generate new conversation perspectives to consider.
-
-What differentiates this from the general GPT4 bot?
-- The general GPT4 bot uses a chatbot interface, while I am integrating it into a chat application.
-- The assistant should be able to provide questions and analyzes the receiver text.
-- Limitations
-    - In a private setting, this implementation violates privacy rules and concerns. This is because we are sending input to GPT-4, OpenAI can collect the input.
-        - However, this also means that the input is annonymized because the input can be coming from different sources. In this case openAI won't know that the input is provided by the sender.
-        - 
+Not everyone knows how to get the most out of their AI chatbot conversations. This chat application serves as an interface that not only holds the conventional chatting functions between users, it also allows users to customize AI agents based on their specifications, and what they want to ask about. This customization part aims to abstract away the prompt engineering process, and makes it easier for individuals to obtain the most out of their conversation.
 ## Architecture
 This chat application consists of several components, including:
 
