@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'routes.dart';
 import 'package:chatapp/services/sp_helper.dart';
 import 'package:chatapp/services/database_service.dart';
 import 'package:chatapp/widgets/add_user_tile.dart';
@@ -189,8 +188,7 @@ class _AddUserToGroupState extends State<AddUserToGroup> {
         "username": username,
       });
       // update current user group field in users collection
-      await databaseService.updateUserGroups(
-          documentReference.id, databaseService.uid!);
+      await databaseService.updateUserGroups(documentReference.id);
 
       // return the created groupId to be passed onto the groupChat
       return documentReference.id;

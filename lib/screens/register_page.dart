@@ -5,7 +5,6 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:chatapp/services/sp_helper.dart';
-import 'package:chatapp/widgets/widgets.dart';
 import '../theme/theme.dart';
 import 'routes.dart';
 
@@ -143,25 +142,30 @@ class _RegisterPageState extends State<RegisterPage> {
                             decoration: InputDecoration(
                               labelText: "Email",
                               labelStyle: TextStyle(
-                                color: AppTheme.textFormFieldColor(focusNode: _emailFocusNode, error: _errorEmail),
+                                color: AppTheme.textFormFieldColor(
+                                    focusNode: _emailFocusNode,
+                                    error: _errorEmail),
                               ),
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: AppTheme.textFormFieldColor(focusNode: _emailFocusNode, error: _errorEmail),
+                                  color: AppTheme.textFormFieldColor(
+                                      focusNode: _emailFocusNode,
+                                      error: _errorEmail),
                                 ),
                               ),
                               prefixIcon: const Icon(Icons.email),
-                              errorText: _errorEmail
-                                  ? "Email exists"
-                                  : null,
-                              prefixIconColor: AppTheme.textFormFieldColor(focusNode: _emailFocusNode, error: _errorEmail),
+                              errorText: _errorEmail ? "Email exists" : null,
+                              prefixIconColor: AppTheme.textFormFieldColor(
+                                  focusNode: _emailFocusNode,
+                                  error: _errorEmail),
                             ),
                             onChanged: null,
                             validator: (val) {
                               setState(() {
                                 _errorEmail = true;
                               });
-                              bool emailValidate = EmailValidator.validate(val!);
+                              bool emailValidate =
+                                  EmailValidator.validate(val!);
                               if (!emailValidate) {
                                 return "Invalid email";
                               }
@@ -182,15 +186,21 @@ class _RegisterPageState extends State<RegisterPage> {
                             decoration: InputDecoration(
                               labelText: "Password",
                               labelStyle: TextStyle(
-                                color: AppTheme.textFormFieldColor(focusNode: _passwordFocusNode, error: _errorPassword),
+                                color: AppTheme.textFormFieldColor(
+                                    focusNode: _passwordFocusNode,
+                                    error: _errorPassword),
                               ),
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: AppTheme.textFormFieldColor(focusNode: _passwordFocusNode, error: _errorPassword),
+                                  color: AppTheme.textFormFieldColor(
+                                      focusNode: _passwordFocusNode,
+                                      error: _errorPassword),
                                 ),
                               ),
                               prefixIcon: const Icon(Icons.lock),
-                              prefixIconColor: AppTheme.textFormFieldColor(focusNode: _passwordFocusNode, error: _errorPassword),
+                              prefixIconColor: AppTheme.textFormFieldColor(
+                                  focusNode: _passwordFocusNode,
+                                  error: _errorPassword),
                             ),
                             onChanged: null,
                             validator: (val) {
@@ -210,11 +220,15 @@ class _RegisterPageState extends State<RegisterPage> {
                             decoration: InputDecoration(
                               labelText: "Confirm Password",
                               labelStyle: TextStyle(
-                                color: AppTheme.textFormFieldColor(focusNode: _confirmPasswordFocusNode, error: _errorConfirmPassword),
+                                color: AppTheme.textFormFieldColor(
+                                    focusNode: _confirmPasswordFocusNode,
+                                    error: _errorConfirmPassword),
                               ),
                               border: const OutlineInputBorder(),
                               prefixIcon: const Icon(Icons.lock),
-                              prefixIconColor: AppTheme.textFormFieldColor(focusNode: _emailFocusNode, error: _errorConfirmPassword),
+                              prefixIconColor: AppTheme.textFormFieldColor(
+                                  focusNode: _emailFocusNode,
+                                  error: _errorConfirmPassword),
                             ),
                             onChanged: null,
                             validator: (val) {
@@ -224,8 +238,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               if (val!.length < 8) {
                                 // val function will override errorText
                                 return "Password must be at least 8 characters";
-                              }
-                              else if (_confirmPasswordController.text !=
+                              } else if (_confirmPasswordController.text !=
                                   _passwordController.text) {
                                 return "Password does not match";
                               }
@@ -292,8 +305,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void register() async {
     if (_formKey.currentState!.validate()) {
-      bool usernameExist =
-          await databaseService.checkDocumentExists(databaseService.usernameCollection , _usernameController.text);
+      bool usernameExist = await databaseService.checkDocumentExists(
+          databaseService.usernameCollection, _usernameController.text);
       debugPrint("usernameExist: $_usernameController");
       if (usernameExist) {
         setState(() {
@@ -314,7 +327,6 @@ class _RegisterPageState extends State<RegisterPage> {
               _emailController.text, _passwordController.text)
           .then((value) {
         if (value == true) {
-
           // saving the shared preference state
           SPHelper.saveUserLoggedInStatus(value);
           SPHelper.saveEmail(_emailController.text);
