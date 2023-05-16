@@ -36,7 +36,6 @@ class _ChatPageState extends State<ChatPage> {
     return formatter.format(now);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,7 +75,10 @@ class _ChatPageState extends State<ChatPage> {
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomePage()));
                 },
               ),
               backgroundColor: Colors.black87,
@@ -98,8 +100,7 @@ class _ChatPageState extends State<ChatPage> {
         children: [
           Expanded(
             child: ChatBody(
-              messageStream: databaseService
-                  .groupCollection
+              messageStream: databaseService.groupCollection
                   .doc(widget.groupId)
                   .collection("messages")
                   .orderBy("timeStamp")
@@ -138,27 +139,27 @@ class _ChatPageState extends State<ChatPage> {
               Align(
                 alignment: Alignment.center,
                 child: IconButton(
-                    icon: const Icon(Icons.send),
-                    color: Colors.black,
-                    onPressed: () async {
-                      // Send message
-                      CollectionReference chatCollection = databaseService
-                          .groupCollection
-                          .doc(widget.groupId)
-                          .collection('messages');
-                      String message = _messageController.text;
-                      String? messageSender = await SPHelper.getUsername();
-                      String? messageSenderId =
-                          FirebaseAuth.instance.currentUser!.uid;
+                  icon: const Icon(Icons.send),
+                  color: Colors.black,
+                  onPressed: () async {
+                    // Send message
+                    CollectionReference chatCollection = databaseService
+                        .groupCollection
+                        .doc(widget.groupId)
+                        .collection('messages');
+                    String message = _messageController.text;
+                    String? messageSender = await SPHelper.getUsername();
+                    String? messageSenderId =
+                        FirebaseAuth.instance.currentUser!.uid;
 
-                      // update the messages collection
-                      await databaseService.updateChatMessage(chatCollection, message,
-                          messageSender!, messageSenderId);
+                    // update the messages collection
+                    await databaseService.updateChatMessage(chatCollection,
+                        message, messageSender!, messageSenderId);
 
-                      debugPrint("Sending Message...");
-                      _messageController.clear();
-                    },
-                  ),
+                    debugPrint("Sending Message...");
+                    _messageController.clear();
+                  },
+                ),
               ),
             ],
           ),
