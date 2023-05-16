@@ -40,7 +40,6 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [],
         backgroundColor: Colors.black87,
         centerTitle: true,
         title: TextFormField(
