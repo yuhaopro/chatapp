@@ -39,14 +39,16 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<QuerySnapshot> gettingGroupDocuments() async {
-    return await databaseService.groupCollection.get();
-  }
-
   @override
   void initState() {
     super.initState();
     gettingUserData();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _createGroupController.dispose();
   }
 
   @override
@@ -80,9 +82,9 @@ class _HomePageState extends State<HomePage> {
         username: username,
         authService: authService,
       ),
-      body: FutureBuilder<QuerySnapshot>(
-        future: gettingGroupDocuments(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: databaseService.getUserGroups(),
+        builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           // getting snapshot
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
@@ -96,9 +98,28 @@ class _HomePageState extends State<HomePage> {
               ),
             );
           }
-
-          // snapshot data received
-          return AddGroupTiles(groupsSnapshot: snapshot.data!);
+          if (snapshot.hasData) {
+            List groupIds = snapshot.data!.get("groups");
+            return FutureBuilder<List<DocumentSnapshot>>(
+                future:
+                    databaseService.getGroupDocuments(groupIds.cast<String>()),
+                builder: (context,
+                    AsyncSnapshot<List<DocumentSnapshot>> futureSnapshot) {
+                  if (futureSnapshot.hasData) {
+                    return AddGroupTiles(userDocument: futureSnapshot.data!);
+                  } else if (futureSnapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${futureSnapshot.error}'),
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                });
+          } else {
+            return const SizedBox.shrink();
+          }
         },
       ),
       floatingActionButton: FloatingActionButton(

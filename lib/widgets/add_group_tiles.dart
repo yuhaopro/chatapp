@@ -1,26 +1,28 @@
 import 'package:chatapp/screens/chat_page.dart';
+import 'package:chatapp/services/database_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AddGroupTiles extends StatefulWidget {
-  const AddGroupTiles({Key? key, required this.groupsSnapshot})
+  const AddGroupTiles({Key? key, required this.userDocument})
       : super(key: key);
-  final QuerySnapshot groupsSnapshot;
+  final List<DocumentSnapshot> userDocument;
 
   @override
   State<AddGroupTiles> createState() => _AddGroupTilesState();
 }
 
 class _AddGroupTilesState extends State<AddGroupTiles> {
+  DatabaseService databaseService = DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid);
   @override
   Widget build(BuildContext context) {
-    List<QueryDocumentSnapshot> documents = widget.groupsSnapshot.docs;
-    return ListView.builder(
-      itemCount: widget.groupsSnapshot.size,
-      itemBuilder: (context, index) {
-        // Get a document corresponding to index
-        DocumentSnapshot documentSnapshot = documents[index];
 
+    return ListView.builder(
+      itemCount: widget.userDocument.length,
+      itemBuilder: (context, index) {
+        // Get a groupsId corresponding to index
+        DocumentSnapshot documentSnapshot = widget.userDocument[index];
         // Get groupId, groupName, groupIcon, mostRecentMessage, mostRecentMessageSender
         String groupId = documentSnapshot.id;
         String groupName = documentSnapshot.get("groupName");

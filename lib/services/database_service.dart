@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class DatabaseService {
@@ -9,6 +10,9 @@ class DatabaseService {
   CollectionReference userCollection = FirebaseFirestore.instance.collection("users");
   CollectionReference usernameCollection = FirebaseFirestore.instance.collection("usernames");
   CollectionReference groupCollection = FirebaseFirestore.instance.collection("groups");
+
+
+  // USER COLLECTION QUERIES
 
   //saving the userdata into userCollection
   Future updateUserData(String username, String email) async {
@@ -26,6 +30,18 @@ class DatabaseService {
     });
   }
 
+  Stream<DocumentSnapshot> getUserGroups() {
+    return userCollection.doc(uid).snapshots();
+  }
+
+  Stream<QuerySnapshot> getGroupInvites() {
+    return userCollection.doc(uid).collection('groupInvites').orderBy("timeStamp", descending: true).snapshots();
+  }
+
+  Future<void> removeGroupInvite(String documentId) async{
+    await userCollection.doc(uid).collection('groupInvites').doc(documentId).delete();
+  }
+
   Future updateUserGroupInvites(String userId, String groupName, String groupId, String groupSenderName, String groupSenderId, ) async {
     // create new subcollection to store group invites
     CollectionReference groupInviteCollection = userCollection.doc(userId).collection("groupInvites");
@@ -34,15 +50,27 @@ class DatabaseService {
       "groupId": groupId,
       "groupSender": groupSenderName,
       "groupSenderId": groupSenderId,
+      "timeStamp": FieldValue.serverTimestamp(),
     });
   }
 
-  Future updateUserGroups(String groupId, String userId) async {
-    await userCollection.doc(userId).update({
+  Future updateUserGroups(String groupId) async {
+    await userCollection.doc(uid).update({
       "groups": FieldValue.arrayUnion([groupId]),
     });
   }
-  
+
+  // GROUPS RELATED QUERIES
+
+  Future<List<DocumentSnapshot>> getGroupDocuments(List<String> groupIds) async {
+    List<DocumentSnapshot> groupsDocuments = [];
+    for (String group in groupIds) {
+      DocumentSnapshot documentSnapshot = await groupCollection.doc(group).get();
+      groupsDocuments.add(documentSnapshot);
+    }
+    return groupsDocuments;
+  }
+
   Future createGroupInfo(String groupName) async {
 
     // create new Document if group does not exist
@@ -89,11 +117,12 @@ class DatabaseService {
     });
   }
 
-  Future updateChatMessage(CollectionReference chatCollection, String message, String messageSender, String messageSenderId, String timeStamp) async{
+  Future updateChatMessage(CollectionReference chatCollection, String message, String messageSender, String messageSenderId) async{
     // Update Chat collection fields
     DocumentReference documentReference = await chatCollection.add({
       "message": message,
-      "timeStamp": timeStamp,
+      // TimeStamp object
+      "timeStamp": FieldValue.serverTimestamp(),
       "messageSender": messageSender,
       "messageSenderId": messageSenderId,
       "messageId": "",
@@ -128,6 +157,8 @@ class DatabaseService {
     }
 
   }
+  // AUTHENTICATION
+
   // getting user data with email check
   Future gettingUserDataThroughEmail(String email) async {
     QuerySnapshot snapshot = await userCollection.where("email", isEqualTo: email).get();

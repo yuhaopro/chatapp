@@ -31,6 +31,7 @@ class _ChatPageState extends State<ChatPage> {
 
   String getTime() {
     final now = DateTime.now();
+    debugPrint('Date and Time: ${DateTime.now()}');
     final formatter = DateFormat('HH:mm a');
     return formatter.format(now);
   }
@@ -149,11 +150,10 @@ class _ChatPageState extends State<ChatPage> {
                       String? messageSender = await SPHelper.getUsername();
                       String? messageSenderId =
                           FirebaseAuth.instance.currentUser!.uid;
-                      String timeStamp = getTime();
 
                       // update the messages collection
                       await databaseService.updateChatMessage(chatCollection, message,
-                          messageSender!, messageSenderId, timeStamp);
+                          messageSender!, messageSenderId);
 
                       debugPrint("Sending Message...");
                       _messageController.clear();
