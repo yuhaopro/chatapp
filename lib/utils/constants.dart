@@ -13,7 +13,6 @@ class Constants {
   static String messagingSenderId = "1015144719724";
   static Color scaffoldBackgroundColor = const Color(0xFFF2F1F8);
   static String title = "SocraticChat";
-
 }
 
 enum AcceptInvites {

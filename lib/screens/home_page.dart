@@ -87,7 +87,9 @@ class _HomePageState extends State<HomePage> {
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           // getting snapshot
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
 
           // snapshot received an error
@@ -100,23 +102,9 @@ class _HomePageState extends State<HomePage> {
           }
           if (snapshot.hasData) {
             List groupIds = snapshot.data!.get("groups");
-            return FutureBuilder<List<DocumentSnapshot>>(
-                future:
-                    databaseService.getGroupDocuments(groupIds.cast<String>()),
-                builder: (context,
-                    AsyncSnapshot<List<DocumentSnapshot>> futureSnapshot) {
-                  if (futureSnapshot.hasData) {
-                    return AddGroupTiles(userDocument: futureSnapshot.data!);
-                  } else if (futureSnapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${futureSnapshot.error}'),
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                });
+            List<Stream<DocumentSnapshot>> documentSnapshotStreams =
+                databaseService.getGroupDocuments(groupIds.cast<String>());
+            return AddGroupTiles(userDocumentStreams: documentSnapshotStreams);
           } else {
             return const SizedBox.shrink();
           }

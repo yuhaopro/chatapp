@@ -16,11 +16,13 @@ void main() async {
   if (kIsWeb) {
     // initialize web
     await Firebase.initializeApp(
-        options: FirebaseOptions(
-            apiKey: Constants.apiKey,
-            appId: Constants.appId,
-            messagingSenderId: Constants.messagingSenderId,
-            projectId: Constants.projectId));
+      options: FirebaseOptions(
+          apiKey: Constants.apiKey,
+          appId: Constants.appId,
+          messagingSenderId: Constants.messagingSenderId,
+          projectId: Constants.projectId,
+          storageBucket: Constants.storageBucket),
+    );
   } else {
     // initialize android
     await Firebase.initializeApp();
