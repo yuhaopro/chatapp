@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_fields
+
 import 'package:chatapp/services/auth_service.dart';
 import 'package:chatapp/services/database_service.dart';
 import 'package:chatapp/utils/constants.dart';

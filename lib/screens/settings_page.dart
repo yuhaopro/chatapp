@@ -5,10 +5,9 @@ import 'package:flutter/material.dart';
 import '../services/sp_helper.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage(
-  {Key? key,
-}) : super(key: key);
-
+  const SettingsPage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -36,12 +35,11 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
     gettingUserData();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-        ],
         backgroundColor: Colors.black87,
         centerTitle: true,
         title: const Text(
@@ -132,17 +130,17 @@ class _SettingsPageState extends State<SettingsPage> {
               iconColor: Colors.black,
               onTap: () {
                 showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text(
-                          "Logout",
-                        ),
-                        content: const Text(
-                          "Are you sure you want to log out?",
-                        ),
-                        actions: [
-                          IconButton(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text(
+                        "Logout",
+                      ),
+                      content: const Text(
+                        "Are you sure you want to log out?",
+                      ),
+                      actions: [
+                        IconButton(
                           onPressed: () {
                             Navigator.pop(context);
                           },
@@ -152,20 +150,21 @@ class _SettingsPageState extends State<SettingsPage> {
                             color: Colors.red,
                           ),
                         ),
-                          IconButton(
-                            onPressed: () {
-                              authService.signOut();
-                              Navigator.pushNamedAndRemoveUntil(context, Routes.login, (route) => false);
-                            },
-                            icon: const Icon(
-                              Icons.check_circle,
-                              size: 25,
-                              color: Colors.green,
-                            ),
+                        IconButton(
+                          onPressed: () {
+                            authService.signOut();
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, Routes.login, (route) => false);
+                          },
+                          icon: const Icon(
+                            Icons.check_circle,
+                            size: 25,
+                            color: Colors.green,
                           ),
-                        ],
-                      );
-                    },
+                        ),
+                      ],
+                    );
+                  },
                 );
               },
               selectedColor: Colors.black,
