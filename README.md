@@ -2,10 +2,8 @@
 
 A chatapp built with Flutter and Firebase 
 
-## Problem Identification
-Not everyone knows how to get the most out of their AI chatbot conversations. This chat application serves as an interface that not only holds the conventional chatting functions between users, it also allows users to customize AI agents based on their specifications, and what they want to ask about. This customization part aims to abstract away the prompt engineering process, and makes it easier for individuals to obtain the most out of their conversation.
 ## Architecture
-A chat app architecture typically consists of several components, including:
+The chat app architecture consists of the following components:
 
 1. <mark style="background: #ffd300;">Backend server:</mark> This handles storing and retrieving chat messages, as well as user authentication and authorization. 
 
