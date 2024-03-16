@@ -1,4 +1,4 @@
-# chatapp (In Progress)
+# chatapp
 
 A chatapp built with Flutter and Firebase 
 
